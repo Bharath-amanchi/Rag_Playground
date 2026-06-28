@@ -1,0 +1,35 @@
+[project]
+name = "simple-rag-app"
+version = "0.1.0"
+description = "Simple RAG application"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-dotenv",
+    "python-multipart",
+
+    "langchain",
+    "langchain-core",
+    "langchain-community",
+    "langchain-chroma",
+    "langchain-huggingface",
+    "langchain-nvidia-ai-endpoints",
+
+    "chromadb",
+
+    "sentence-transformers",
+    "transformers",
+
+    "pypdf",
+
+    "ipykernel"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false
