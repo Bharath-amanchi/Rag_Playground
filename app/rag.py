@@ -6,29 +6,59 @@ from langchain_core.output_parsers import StrOutputParser
 from app.vectorstore import retriever
 from app.prompts import RAG_PROMPT
 from app.llm import llm
-
+from fastapi import HTTPException
+from app.memory import (
+    add_message,
+    get_history
+)
 
 parser = StrOutputParser()
 
 
-def ask_question(question: str):
+def ask_question( session_id: str,question: str,):
 
-    docs = retriever.invoke(question)
+
+
+    try:
+        docs = retriever.invoke(question)
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
     context = "\n\n".join(
         doc.page_content
         for doc in docs
     )
-
+    history = "\n".join(
+        [
+            f"{msg['role']}: {msg['content']}"
+            for msg in get_history(session_id)
+        ]
+    )
     chain = RAG_PROMPT | llm | parser
 
     answer = chain.invoke(
         {
             "context": context,
             "question": question,
+            "history":history,
         }
     )
+    add_message(
+        session_id,
+        "user",
+        question,
+    )
 
+    add_message(
+        session_id,
+        "assistant",
+        answer,
+    )
     return {
         "answer": answer,
         "sources": [

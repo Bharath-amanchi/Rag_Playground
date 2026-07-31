@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import APIRouter
 from fastapi import File
 from fastapi import UploadFile
-
+from app.vectorstore import vectorstore
 from app.rag import ingest_document
 from app.models import ChatRequest
 from app.rag import ask_question
@@ -33,10 +33,32 @@ async def upload_pdf(file: UploadFile = File(...)):
 @router.post("/chat")
 def chat(request: ChatRequest):
 
-    answer = ask_question(request.question)
+    answer = ask_question(request.session_id,
+        request.question)
 
     return {
         "question": request.question,
         "answer": answer,
         
     }
+@router.get("/documents")
+def documents():
+
+    collection = vectorstore._collection
+
+    return {
+        "count": collection.count()
+    }
+
+@router.delete("/documents")
+def clear_documents():
+
+    collection = vectorstore._collection
+
+    ids = collection.get()["ids"]
+
+    collection.delete(ids)
+
+    return {
+        "message":"Database cleared"
+    }   
