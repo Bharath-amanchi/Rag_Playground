@@ -6,4 +6,4 @@ def load_pdf(pdf_path:str):
     filename = Path(pdf_path).name
     for doc in docs:
         doc.metadata["filename"] = filename    
-    return loader.load()
+    return docs
