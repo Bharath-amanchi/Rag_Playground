@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends
 from passlib.context import CryptContext
 from datetime import datetime
-
+from app.auth.dependencies import get_current_user
 from app.db.mongodb import users_collection
 from app.db.schemas import UserCreate
 from app.auth.jwt_handler import create_access_token
@@ -61,9 +61,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.get("/me")
-async def get_me(current_user=Depends(
-    __import__("app.auth.dependencies", fromlist=["get_current_user"]).get_current_user
-)):
+async def get_me(current_user=Depends(get_current_user)):   # clean now
     return {
         "username": current_user["username"],
         "email": current_user["email"],

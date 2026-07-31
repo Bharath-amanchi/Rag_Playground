@@ -5,8 +5,7 @@ from app.auth.routes import router as auth_router
 
 app = FastAPI(title="Simple RAG API")
 
-app.include_router(router)
-app.include_router(auth_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:4200"],
@@ -14,6 +13,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(router)
+app.include_router(auth_router)
 @app.get("/")
 def root():
     return {
